@@ -1,0 +1,38 @@
+name: Update JAAH Feed Daily
+
+on:
+  schedule:
+    # 매일 한국 시간(KST) 오전 06:00 실행 (UTC 기준 21:00)
+    - cron: '0 21 * * *'
+  workflow_dispatch: # 수동 즉시 실행 활성화
+
+permissions:
+  contents: write
+
+jobs:
+  filter-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.10 환경 세팅
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: JAAH 피드 추출 스크립트 실행
+        run: |
+          python filter_jaah.py
+
+      - name: 변경된 CSV 파일 자동 커밋 및 푸시
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add jaah_feed.csv
+          if git diff --staged --quiet; then
+            echo "변경된 상품 데이터가 없습니다."
+          else
+            git commit -m "chore: JAAH 제품 피드 자동 갱신 [skip ci]"
+            git push
+          fi
