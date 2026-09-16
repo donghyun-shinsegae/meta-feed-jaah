@@ -2,9 +2,9 @@ name: Update JAAH Feed Daily
 
 on:
   schedule:
-    # 매일 한국 시간(KST) 오전 06:00 실행 (UTC 기준 21:00)
-    - cron: '0 21 * * *'
-  workflow_dispatch: # 수동 즉시 실행 활성화
+    # 3시간마다 매 정시 실행 (하루 총 8회 자동 갱신)
+    - cron: '0 */3 * * *'
+  workflow_dispatch: # 관리자 수동 즉시 실행 지원
 
 permissions:
   contents: write
